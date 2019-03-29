@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-
-import Common from './common'
-
+import './style/common.less';
+// import Common from './common'
+import Admin from './Admin'
 class App extends Component {
     render() {
         return (
             <div>
-                <Common/>
+                <Admin/>
             </div>
         );
     }

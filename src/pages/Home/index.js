@@ -1,23 +1,25 @@
+
 /**
  * +----------------------------------------------------------------------
- * | common
+ * | index
  * +----------------------------------------------------------------------
  * | Author: 1009239228@qq.com
  * +----------------------------------------------------------------------
  */
+
 import React,{Component} from 'react';
 
-import Header from './components/Header';
+import './index.less'
 
-class Common extends Component{
+class Home extends Component{
 
     render() {
         return (
-            <div>
-
+            <div className='home-wrap'>
+                后台管理系统
             </div>
         );
     }
 
 }
-export default Common;
+export default Home;

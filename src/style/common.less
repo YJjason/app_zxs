@@ -1,0 +1,19 @@
+
+@import "default";
+body {
+  background: @colorL;
+  font-size: 14px;
+  color: #606266;
+  font-family: "Helvetica Neue For Number", "PingFang SC Light", "Heiti SC", "San Francisco", "Helvetica", Arial, sans-serif;
+}
+ul,li{
+  list-style: none;
+}
+.clearfix{
+  &:after{
+    content:" ";
+    clear:both;
+    display:block;
+    visibility:hidden;
+  }
+}
