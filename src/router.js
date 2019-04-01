@@ -12,7 +12,8 @@ import App from './App'
 import Home from './pages/home';
 import Login from './pages/login';
 import Admin from './admin';
-import Button from './pages/ui/buttons';
+
+import Upgrade from './pages/upgrade';
 import Nomatch from './pages/nomatch';
 
 export default class IRouter extends Component {
@@ -25,7 +26,7 @@ export default class IRouter extends Component {
                         <Admin>
                             <Route path='/login' component={Login}/>
                             <Route path='/home' component={Home}/>
-                            <Route path='/admin/ui/buttons' component={Button}/>
+                            <Route path='/admin/upgrade' component={Upgrade}/>
                         </Admin>
                     </App>
                 </BrowserRouter>

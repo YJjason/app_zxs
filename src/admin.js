@@ -11,13 +11,9 @@ import {Row, Col} from "antd";
 import Header from './components/Header';
 import NavLeft from './components/NavLeft';
 import Home from './pages/home';
-import Buttons from './pages/ui/buttons';
 import './style/common.less';
 
 class Admin extends Component {
-    componentWillMount() {
-        console.log('admin', this.props.children)
-    }
 
     render() {
         return (

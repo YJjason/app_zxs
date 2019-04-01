@@ -11,9 +11,11 @@ const MenuItemGroup = Menu.ItemGroup;
 
 class NavLeft extends Component {
 
+    rootSubmenuKeys = ['sub1', 'sub2', 'sub4'];
     state = {
+        openKeys: ['sub1'],
         currentKey: ''
-    }
+    };
 
     componentWillMount() {
 
@@ -37,6 +39,16 @@ class NavLeft extends Component {
             </Menu.Item>
         })
     }
+    onOpenChange = (openKeys) => {
+        const latestOpenKey = openKeys.find(key => this.state.openKeys.indexOf(key) === -1);
+        if (this.rootSubmenuKeys.indexOf(latestOpenKey) === -1) {
+            this.setState({openKeys});
+        } else {
+            this.setState({
+                openKeys: latestOpenKey ? [latestOpenKey] : [],
+            });
+        }
+    }
 
     render() {
         return (
@@ -45,14 +57,11 @@ class NavLeft extends Component {
                     <img src="/assets/logo-ant.svg" alt=""/>
                     <h1>zxs 管理后台</h1>
                 </div>
-                <Menu mode="vertical"
-                      theme='dark'>
-                    {/* <SubMenu key="sub1" title={<span><Icon type="mail" /><span>Navigation One</span></span>}>
-                        <Menu.Item key="1">Option 1</Menu.Item>
-                        <Menu.Item key="2">Option 2</Menu.Item>
-                        <Menu.Item key="3">Option 3</Menu.Item>
-                        <Menu.Item key="4">Option 4</Menu.Item>
-                    </SubMenu>*/}
+                <Menu mode="inline"
+                      theme='dark'
+                      openKeys={this.state.openKeys}
+                      onOpenChange={this.onOpenChange}
+                >
                     {/*遍历后的menu*/}
                     {this.state.menuTreeNode}
                 </Menu>
