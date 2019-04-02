@@ -24,13 +24,18 @@ class FilterForm extends Component{
         this.props.form.resetFields(); // 重置表单的方法
     };
 
-    handleOnChange=(value)=>{
-        console.log(123,value)
-    }
+   /* handleOnChange=(e)=>{
+        console.log(123,e.target.value)
+    }*/
     initFormList = () => {
         const {getFieldDecorator} = this.props.form;
         const formList = this.props.formList; // 从父组件Order.js 中获取该对象进行使用
         const formItemList = [];
+
+        function onChange(value, dateString) {
+            console.log('Selected Time: ', value);
+            console.log('Formatted Selected Time: ', dateString);
+        }
         if (formList && formList.length > 0) {
             formList.forEach((item, i) => {
                 let label = item.label;
@@ -60,8 +65,9 @@ class FilterForm extends Component{
                 } else if (item.type == 'DATE') {
                     const begin_time = <FormItem label="订单时间" key={field}>
                         {
-                            getFieldDecorator('begin_time')(
-                                <DatePicker showTime={false} locale={locale} placeholder={placeholder} format="YYYY-MM-DD "/>
+                            getFieldDecorator('begin_time',{
+                            })(
+                                <DatePicker showTime={false} locale={locale} onChange={onChange}  placeholder={placeholder} />
                             )
                         }
                     </FormItem>;
@@ -70,7 +76,7 @@ class FilterForm extends Component{
                     const end_time = <FormItem label="~" colon={false} key={field}>
                         {
                             getFieldDecorator('end_time')(
-                                <DatePicker showTime={false} locale={locale}  placeholder={placeholder} format="YYYY-MM-DD "/>
+                                <DatePicker showTime={false} locale={locale}  placeholder={placeholder} />
                             )
                         }
                     </FormItem>;

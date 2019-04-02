@@ -62,7 +62,6 @@ export default class Axios {
             url:url,
             data
         }).then((data)=>{
-            console.log(123213,data)
             if (data&& data.data) {
                 _this.setState({
                     list: data.data.item_list.map((item, index) => {

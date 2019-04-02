@@ -33,31 +33,39 @@ export default class Upgrade extends Component {
 
     requestList = () => {
         let _this = this;
-        axios.requestList(this, '/upgrade/list', this.params)
-        /*       axios.ajax({
-                   url: '/upgrade/list',
-                   data: {
-                       param: {
-                           page: this.params.page
-                       }
-                   }
-               })
-                   .then((res) => {
-                       let list = res.data.item_list.map((item, index) => {
-                           item.key = index;
-                           return item;
-                       });
-                       this.setState({
-                           list: list,
-                           total: res.data.all_count,
-                           pagination: Utils.pagination(res, (current) => {
-                               _this.params.page = current;
-                               _this.requestList()
-                           })
-                       })
+        // axios.requestList(this, '/upgrade/list', this.params)
+                 axios.ajax({
+                     url: '/upgrade/list',
+                     data: {
+                         param: {
+                             page: this.params.page
+                         }
+                     }
+                 })
+                     .then((res) => {
+                         console.log(123213,res)
+                         let list = res.data.item_list.map((item, index) => {
+                             item.key = index;
+                             return item;
+                         });
+                         this.setState({
+                             list: list,
+                             total: res.data.all_count,
+                             pagination: Utils.pagination(res, (current) => {
+                                 _this.params.page = current;
+                                 _this.requestList()
+                             })
+                         })
 
-                   })*/
+                     })
     }
+
+    handleClick(obj) {
+        console.log(12321, obj)
+        const nowId = obj.id;
+
+    }
+
     /*封装头部基础组件*/
     formList = [
         {
@@ -65,7 +73,7 @@ export default class Upgrade extends Component {
             label: '系统分类',
             placeholder: '全部',
             initialValue: '0',
-            width:200,
+            width: 200,
             filter: 'system_id',
             list: [
                 {
@@ -104,8 +112,19 @@ export default class Upgrade extends Component {
         },
     ]
     /*查询*/
-    handleFilter = (params) => {
-        console.log(params)
+    handleFilter = (fieldsValue) => {
+        const sys = fieldsValue['system_class'];
+        const sysId = fieldsValue.system_class;
+        const sysName = fieldsValue.system_name;
+        const begin_time = moment().format('YYYY-MM-DD', fieldsValue['begin_time']._d);
+        const end_time = moment().format('YYYY-MM-DD', fieldsValue['end_time']._d);
+        this.params = {
+            sysId,
+            sysName,
+            begin_time,
+            end_time
+        }
+        this.requestList();
     }
 
     render() {
@@ -130,7 +149,7 @@ export default class Upgrade extends Component {
             }, {
                 title: 'APP下载链接',
                 dataIndex: 'link',
-                width: 75
+                width: 50
             }, {
                 title: '升级内容',
                 dataIndex: 'content',
@@ -142,18 +161,19 @@ export default class Upgrade extends Component {
             }, {
                 title: '操作',
                 dataIndex: 'sys_opera',
-                render: () => {
-                    return <a href="#">操作</a>
-                },
-                width: 75
+                width: 75,
+                render: (obj) => {
+                    return <a href="#" onClick={() => this.handleClick(obj)}>删除</a>
+                }
+
             }
         ]
         return (
             <div>
                 <Card title='升级管理'>
                     <Col span={22}>
-                        {/*<FilterForm filterSubmit={this.handleFilter}/>*/}
-                        <BaseForm formList={this.formList} filterSubmit={this.handleFilter}/>
+                        <FilterForm filterSubmit={this.handleFilter}/>
+                        {/*<BaseForm formList={this.formList} filterSubmit={this.handleFilter}/>*/}
                     </Col>
                 </Card>
                 <Card>
@@ -175,11 +195,15 @@ export default class Upgrade extends Component {
 
 }
 
-/*
 class FilterForm extends Component {
-    handleFilterSubmit=()=>{
+
+    handleFilterSubmit = () => {
         let fieldsValue = this.props.form.getFieldsValue();
         this.props.filterSubmit(fieldsValue);
+        /*   const sys = fieldsValue['system_class'];
+           const begin_time = moment().format('YYYY-MM-DD',fieldsValue['begin_time']._d);
+           const end_time = moment().format('YYYY-MM-DD',fieldsValue['end_time']._d);
+   */
     }
 
 
@@ -207,15 +231,21 @@ class FilterForm extends Component {
                 </FormItem>
                 <FormItem label="时间:">
                     {
-                        getFieldDecorator("begin_time")(
+                        getFieldDecorator("begin_time", {
+                            initialValue: '',
+                            validateTrigger: 'onChange'
+                        })(
                             <DatePicker locale={locale} showTime={true} placeholder="开始时间" format="YYYY-MM-DD"/>
                         )
                     }
                 </FormItem>
                 <FormItem label="">
                     {
-                        getFieldDecorator('end_time')(
-                            <DatePicker locale={locale}  showTime={true} placeholder="结束时间" format="YYYY-MM-DD"/>
+                        getFieldDecorator('end_time', {
+                            initialValue: '',
+                            validateTrigger: 'onChange'
+                        })(
+                            <DatePicker locale={locale} showTime={true} placeholder="结束时间" format="YYYY-MM-DD"/>
                         )
                     }
                 </FormItem>
@@ -231,4 +261,3 @@ class FilterForm extends Component {
 }
 
 FilterForm = Form.create({})(FilterForm);
-*/
