@@ -6,7 +6,7 @@
  * +----------------------------------------------------------------------
  */
 import React, {Component} from 'react';
-import {Row, Col, Card, Input, Button, Form, Select, DatePicker, Table, Message} from "antd";
+import {Row, Col, Card, Input, Button, Form, Select, DatePicker, Table, message, Modal, Radio} from "antd";
 import axios from './../../axios';
 import Utils from './../../utils/utils';
 import locale from 'antd/lib/date-picker/locale/zh_CN';
@@ -16,54 +16,77 @@ import BaseForm from './../../components/BaseForm'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const TextArea = Input.TextArea;
+const RadioGroup = Radio.Group;
+
 export default class Upgrade extends Component {
 
     state = {
         list: [],
         total: '',
+        isUserVisible: false
     }
     params = {
-        page: 1
+        page: 1,
     };
 
     componentWillMount() {
         this.requestList();
     }
 
-
     requestList = () => {
         let _this = this;
         // axios.requestList(this, '/upgrade/list', this.params)
-                 axios.ajax({
-                     url: '/upgrade/list',
-                     data: {
-                         param: {
-                             page: this.params.page
-                         }
-                     }
-                 })
-                     .then((res) => {
-                         console.log(123213,res)
-                         let list = res.data.item_list.map((item, index) => {
-                             item.key = index;
-                             return item;
-                         });
-                         this.setState({
-                             list: list,
-                             total: res.data.all_count,
-                             pagination: Utils.pagination(res, (current) => {
-                                 _this.params.page = current;
-                                 _this.requestList()
-                             })
-                         })
+        axios.ajax({
+            url: '/upgrade/list',
+            data: {
+                param: {
+                    page: this.params.page
+                }
+            }
+        })
+            .then((res) => {
+                let list = res.data.item_list.map((item, index) => {
+                    item.key = index;
+                    return item;
+                });
+                this.setState({
+                    list: list,
+                    total: res.data.all_count,
+                    pagination: Utils.pagination(res, (current) => {
+                        _this.params.page = current;
+                        _this.requestList()
+                    })
+                })
 
-                     })
+            })
     }
 
+    // 删除
     handleClick(obj) {
-        console.log(12321, obj)
-        const nowId = obj.id;
+        const _this = this;
+        Modal.confirm({
+            title: '提示',
+            content: '确认要删除选中',
+            onOk() {
+                axios.ajax({
+                    url: "/upgrade/delversion",
+                    data: {
+                        params: obj.id
+                    }
+                }).then((res) => {
+                    if (res.code == 0) {
+                        _this.requestList();
+                    }
+                })
+            }
+        })
+    }
 
+    handleAdd() {
+        this.setState({
+            isUserVisible: true
+        })
     }
 
     /*封装头部基础组件*/
@@ -113,18 +136,63 @@ export default class Upgrade extends Component {
     ]
     /*查询*/
     handleFilter = (fieldsValue) => {
+        let _this = this;
         const sys = fieldsValue['system_class'];
-        const sysId = fieldsValue.system_class;
-        const sysName = fieldsValue.system_name;
-        const begin_time = moment().format('YYYY-MM-DD', fieldsValue['begin_time']._d);
-        const end_time = moment().format('YYYY-MM-DD', fieldsValue['end_time']._d);
-        this.params = {
-            sysId,
-            sysName,
-            begin_time,
-            end_time
-        }
-        this.requestList();
+        const sysName = fieldsValue['system_name'];
+        const begin_time = moment(fieldsValue['timeStart']).format('YYYY-MM-DD') || "";
+        const end_time = moment(fieldsValue['temeEnd']).format('YYYY-MM-DD') || "";
+
+        // axios.requestList(this, '/upgrade/list', this.params)
+        // this.requestList();
+        axios.ajax({
+            url: '/upgrade/list',
+            data: {
+                param: {
+                    page: this.params.page,
+                    sys,
+                    sysName,
+                    begin_time,
+                    end_time
+                }
+            }
+        }).then((res) => {
+            let list = res.data.item_list.map((item, index) => {
+                item.key = index;
+                return item;
+            });
+            this.setState({
+                list: list,
+                total: res.data.all_count,
+                pagination: Utils.pagination(res, (current) => {
+                    _this.params.page = current;
+                    _this.requestList()
+                })
+            })
+        })
+    }
+    handleVersionSubmit = () => {
+        const data = this.roleForm.props.form.getFieldsValue();
+        axios.ajax({
+            url: '/upgrade/add',
+            data: {
+                param: {
+                    params: data
+                }
+            }
+        }).then((res) => {
+            if (res.code == 0) {
+                this.setState({
+                    isUserVisible: false
+                })
+                message.success('创建新版本成功')
+                /*表单内容清空*/
+                this.roleForm.props.form.resetFields();
+                this.requestList();
+            } else {
+                message.error(res)
+            }
+
+        })
     }
 
     render() {
@@ -151,9 +219,16 @@ export default class Upgrade extends Component {
                 dataIndex: 'link',
                 width: 50
             }, {
+                title: '是否强制下载',
+                dataIndex: 'upgrade',
+                width: 70,
+                render: (render, obj) => {
+                    return obj.upgrade = obj.upgrade == '0' ? '否' : '是';
+                }
+            }, {
                 title: '升级内容',
                 dataIndex: 'content',
-                width: 100
+                width: 150,
             }, {
                 title: '发布时间',
                 dataIndex: 'release_time',
@@ -162,7 +237,7 @@ export default class Upgrade extends Component {
                 title: '操作',
                 dataIndex: 'sys_opera',
                 width: 75,
-                render: (obj) => {
+                render: (record, obj) => {
                     return <a href="#" onClick={() => this.handleClick(obj)}>删除</a>
                 }
 
@@ -172,7 +247,8 @@ export default class Upgrade extends Component {
             <div>
                 <Card title='升级管理'>
                     <Col span={22}>
-                        <FilterForm filterSubmit={this.handleFilter}/>
+                        <FilterForm filterSubmit={this.handleFilter} formList={this.formList}
+                                    handleClickBtn={this.handleAdd.bind(this)}/>
                         {/*<BaseForm formList={this.formList} filterSubmit={this.handleFilter}/>*/}
                     </Col>
                 </Card>
@@ -187,25 +263,55 @@ export default class Upgrade extends Component {
                             pagination={this.state.pagination}
                         />
                     </div>
-
                 </Card>
+                {/*弹窗*/}
+                <Modal
+                    title="新建版本"
+                    visible={this.state.isUserVisible}
+                    onOk={this.handleVersionSubmit}
+                    onCancel={() => {
+                        this.setState({
+                            isUserVisible: false,
+                        })
+                    }}
+                >
+                    <VersionForm
+                        wrappedComponentRef={(inst) => {  //获取嵌套表格内容
+                            this.roleForm = inst
+                        }}
+                    />
+
+                </Modal>
             </div>
         );
     }
 
 }
 
+/*子组件1*/
 class FilterForm extends Component {
 
     handleFilterSubmit = () => {
         let fieldsValue = this.props.form.getFieldsValue();
         this.props.filterSubmit(fieldsValue);
-        /*   const sys = fieldsValue['system_class'];
-           const begin_time = moment().format('YYYY-MM-DD',fieldsValue['begin_time']._d);
-           const end_time = moment().format('YYYY-MM-DD',fieldsValue['end_time']._d);
-   */
     }
-
+    handleClickNew = () => {
+        this.props.handleClickBtn();
+    }
+    onTimeStartChange = (value) => {
+        if (value) {
+            const form = this.props.form;
+            const timeEnd = form.getFieldValue('timeEnd');
+            if (timeEnd) form.validateFieldsAndScroll(['timeEnd']);
+        }
+    };
+    onTimeEndChange = (value) => {
+        if (value) {
+            const form = this.props.form;
+            const timeStart = form.getFieldValue('timeStart');
+            if (timeStart) form.validateFieldsAndScroll(['timeStart']);
+        }
+    };
 
     render() {
         const {getFieldDecorator} = this.props.form;
@@ -230,29 +336,43 @@ class FilterForm extends Component {
                     }
                 </FormItem>
                 <FormItem label="时间:">
-                    {
-                        getFieldDecorator("begin_time", {
-                            initialValue: '',
-                            validateTrigger: 'onChange'
-                        })(
-                            <DatePicker locale={locale} showTime={true} placeholder="开始时间" format="YYYY-MM-DD"/>
-                        )
-                    }
+                    {getFieldDecorator('timeStart', {
+                        rules: [
+                            {
+                                validator: (rule, value, callback) => {
+                                    const timeEnd = this.props.form.getFieldValue('timeEnd');
+                                    if (timeEnd && timeEnd.isBefore(value)) {
+                                        callback('开始时间必须小于结束时间');
+                                    } else {
+                                        callback();
+                                    }
+                                }
+                            }
+                        ]
+                    })(<DatePicker onChange={this.onTimeStartChange} locale={locale} placeholder="请选择开始时间"/>)}
                 </FormItem>
                 <FormItem label="">
-                    {
-                        getFieldDecorator('end_time', {
-                            initialValue: '',
-                            validateTrigger: 'onChange'
-                        })(
-                            <DatePicker locale={locale} showTime={true} placeholder="结束时间" format="YYYY-MM-DD"/>
-                        )
-                    }
+                    {getFieldDecorator('timeEnd', {
+                        rules: [
+                            {
+                                validator: (rule, value, callback) => {
+                                    const timeStart = this.props.form.getFieldValue('timeStart');
+                                    if (timeStart && timeStart.isAfter(value)) {
+                                        callback('结束时间必须大于开始时间');
+                                    } else {
+                                        callback();
+                                    }
+                                }
+                            }
+                        ]
+                    })(<DatePicker onChange={this.onTimeEndChange} locale={locale} placeholder="请选择结束时间"/>)}
                 </FormItem>
                 <FormItem>
                     <Button type="primary" style={{marginRight: 300}} onClick={this.handleFilterSubmit}>查询</Button>
                     <Button type="primary"
-                            style={{backgroundColor: '#67c23a', color: '#fff', border: 'none'}}>新建版本</Button>
+                            style={{backgroundColor: '#67c23a', color: '#fff', border: 'none'}}
+                            onClick={this.handleClickNew}
+                    >新建版本</Button>
                 </FormItem>
             </Form>
         );
@@ -261,3 +381,95 @@ class FilterForm extends Component {
 }
 
 FilterForm = Form.create({})(FilterForm);
+
+/*子组件2*/
+class VersionForm extends Component {
+
+    render() {
+        const formItemLayout = {
+            labelCol: {
+                span: 6
+            },
+            wrapperCol: {
+                span: 18
+            }
+        }
+        const {getFieldDecorator} = this.props.form;
+        return (
+            <Form layout="horizontal">
+                <FormItem label="升级系统" {...formItemLayout}>
+                    {
+                        getFieldDecorator("state", {
+                            rules: [
+                                {required: true}
+                            ]
+                        })(
+                            <RadioGroup>
+                                <Radio value={1}>Android</Radio>
+                                <Radio value={2}>IOS</Radio>
+                            </RadioGroup>
+                        )
+                    }
+                </FormItem>
+                <FormItem label="版本号" {...formItemLayout}>
+                    {
+                        getFieldDecorator("ver_num", {
+                            rules: [
+                                {required: true,}
+                            ]
+                        })(
+                            <Input type='text' placeholder='请输入版本号'/>
+                        )
+                    }
+                </FormItem>
+                <FormItem label="版本名称" {...formItemLayout}>
+                    {
+                        getFieldDecorator("ver_name", {
+                            rules: [
+                                {required: true}
+                            ]
+                        })(
+                            <Input type='text' placeholder='请输入版本名称'/>
+                        )
+                    }
+                </FormItem>
+                <FormItem label="app下载链接地址" {...formItemLayout}>
+                    {
+                        getFieldDecorator("app_addr", {
+                            rules: [
+                                {required: true}
+                            ]
+                        })(
+                            <Input type='text' placeholder='请输入app链接地址'/>
+                        )
+                    }
+                </FormItem>
+                <FormItem label="是否强制升级" {...formItemLayout}>
+                    {
+                        getFieldDecorator("upgrade", {
+                            rules: [
+                                {required: true}
+                            ]
+                        })(
+                            <RadioGroup>
+                                <Radio value={1}>是</Radio>
+                                <Radio value={0}>否</Radio>
+                            </RadioGroup>
+                        )
+                    }
+                </FormItem>
+                <FormItem label="升级内容" {...formItemLayout}>
+                    {
+                        getFieldDecorator("upgrade_content")(
+                            <TextArea placeholder="升级内容"></TextArea>
+                        )
+                    }
+                </FormItem>
+
+            </Form>
+        );
+    }
+
+}
+
+VersionForm = Form.create({})(VersionForm);
