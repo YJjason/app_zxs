@@ -96,7 +96,7 @@ export default class Upgrade extends Component {
             label: '系统分类',
             placeholder: '全部',
             initialValue: '0',
-            width: 200,
+            width: 100,
             filter: 'system_id',
             list: [
                 {
@@ -123,14 +123,13 @@ export default class Upgrade extends Component {
             placeholder: '订单状态',
             filter: 'order_statu',
             width: 100,
-
         },
 
         {
-            type: 'DATE',
+            type: '时间查询',
             label: '请选择入职如期',
             placeholder: '请选择日期',
-            width: 100,
+            width: 75,
             filter: 'begin_time',
         },
     ]
@@ -247,13 +246,13 @@ export default class Upgrade extends Component {
             <div>
                 <Card title='升级管理'>
                     <Col span={22}>
-                        <FilterForm filterSubmit={this.handleFilter} formList={this.formList}
-                                    handleClickBtn={this.handleAdd.bind(this)}/>
-                        {/*<BaseForm formList={this.formList} filterSubmit={this.handleFilter}/>*/}
+                        {/*<FilterForm filterSubmit={this.handleFilter} formList={this.formList}
+                                    handleClickBtn={this.handleAdd.bind(this)}/>*/}
+                        <BaseForm formList={this.formList} filterSubmit={this.handleFilter} handleClickBtn={this.handleAdd.bind(this)}/>
                     </Col>
                 </Card>
                 <Card>
-                    <Col><h1 style={{margin: 5, fontSize: 18}}>全部(<span
+                    <Col><h1 style={{fontSize: 18}}>全部(<span
                         style={{color: '#67C23A'}}>{this.state.total}</span>)</h1></Col>
                     <div className="content-wrap">
                         <Table
