@@ -41,7 +41,6 @@ class FilterForm extends Component {
     initFormList = () => {
         const {getFieldDecorator} = this.props.form;
         const formList = this.props.formList; // 从父组件Order.js 中获取该对象进行使用
-        console.log(123, formList)
         const formItemList = [];
         if (formList && formList.length > 0) {
             formList.forEach((item, i) => {
@@ -70,13 +69,13 @@ class FilterForm extends Component {
                     </FormItem>;
                     formItemList.push(city);
                 } else if (item.type == '时间查询') {
-                    const begin_time = <FormItem label="订单时间" key={field}>
+                    const timeStart = <FormItem label="订单时间" key='timeStart'>
                         {
                             getFieldDecorator('timeStart', {
                                 rules: [
                                     {
                                         validator: (rule, value, callback) => {
-                                            const timeEnd = this.props.form.getFieldValue('timeEnd');
+                                            const timeEnd = this.props.form.getFieldValue('timeEnd')||'';
                                             if (timeEnd && timeEnd.isBefore(value)) {
                                                 callback('开始时间必须小于结束时间');
                                             } else {
@@ -90,15 +89,14 @@ class FilterForm extends Component {
                             )
                         }
                     </FormItem>;
-                    formItemList.push(begin_time);
-                    const end_time = <FormItem label="~" colon={false} key={field}>
-                        {console.log('begin',field)}
+                    formItemList.push(timeStart);
+                    const timeEnd = <FormItem label="~" colon={false} key="timeEnd">
                         {
                             getFieldDecorator('timeEnd', {
                                 rules: [
                                     {
                                         validator: (rule, value, callback) => {
-                                            const timeStart = this.props.form.getFieldValue('timeStart');
+                                            const timeStart = this.props.form.getFieldValue('timeStart')||'';
                                             if (timeStart && timeStart.isAfter(value)) {
                                                 callback('结束时间必须大于开始时间');
                                             } else {
@@ -112,7 +110,7 @@ class FilterForm extends Component {
                             )
                         }
                     </FormItem>;
-                    formItemList.push(end_time);
+                    formItemList.push(timeEnd);
 
                 } else if (item.type == 'INPUT') {
                     // 中括号 [变量]  ,会将其看作变量对待
@@ -178,62 +176,12 @@ class FilterForm extends Component {
         return (
             <Form layout='inline'>
                 {this.initFormList()}
-                {/*<FormItem label="系统分类:">
-                    {
-                        getFieldDecorator("system_class")(
-                            <Select style={{width: 100}} placeholder="系统分类">
-                                <Option value="">系统分类</Option>
-                                <Option value="1">Android</Option>
-                                <Option value="2">IOS</Option>
-                            </Select>
-                        )
-                    }
-                </FormItem>
-                <FormItem label="版本名称:">
-                    {
-                        getFieldDecorator("system_name")(
-                            <Input placeholder="版本名称"/>
-                        )
-                    }
-                </FormItem>
-                <FormItem label="时间:">
-                    {getFieldDecorator('timeStart', {
-                        rules: [
-                            {
-                                validator: (rule, value, callback) => {
-                                    const timeEnd = this.props.form.getFieldValue('timeEnd');
-                                    if (timeEnd && timeEnd.isBefore(value)) {
-                                        callback('开始时间必须小于结束时间');
-                                    } else {
-                                        callback();
-                                    }
-                                }
-                            }
-                        ]
-                    })(<DatePicker onChange={this.onTimeStartChange} locale={locale} placeholder="请选择开始时间"/>)}
-                </FormItem>
-                <FormItem label="">
-                    {getFieldDecorator('timeEnd', {
-                        rules: [
-                            {
-                                validator: (rule, value, callback) => {
-                                    const timeStart = this.props.form.getFieldValue('timeStart');
-                                    if (timeStart && timeStart.isAfter(value)) {
-                                        callback('结束时间必须大于开始时间');
-                                    } else {
-                                        callback();
-                                    }
-                                }
-                            }
-                        ]
-                    })(<DatePicker onChange={this.onTimeEndChange} locale={locale} placeholder="请选择结束时间"/>)}
-                </FormItem>*/}
                 <FormItem>
                     <Button type="primary" style={{marginRight: 100}} onClick={this.handleFilterSubmit}>查询</Button>
-                    <Button type="primary"
+               {/*     <Button type="primary"
                             style={{backgroundColor: '#67c23a', color: '#fff', border: 'none'}}
                             onClick={this.handleClickNew}
-                    >新建版本</Button>
+                    >新建版本</Button>*/}
                 </FormItem>
             </Form>
         );

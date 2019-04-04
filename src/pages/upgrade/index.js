@@ -139,7 +139,7 @@ export default class Upgrade extends Component {
         const sys = fieldsValue['system_class'];
         const sysName = fieldsValue['system_name'];
         const begin_time = moment(fieldsValue['timeStart']).format('YYYY-MM-DD') || "";
-        const end_time = moment(fieldsValue['temeEnd']).format('YYYY-MM-DD') || "";
+        const end_time = moment(fieldsValue['timeEnd']).format('YYYY-MM-DD') || "";
 
         // axios.requestList(this, '/upgrade/list', this.params)
         // this.requestList();
@@ -199,20 +199,24 @@ export default class Upgrade extends Component {
             {
                 title: '排序ID',
                 dataIndex: 'id',
-                width: 75
+                width: 75,
+                align:"center"
             }, {
                 title: '系统',
                 dataIndex: 'category',
-                width: 75
+                width: 75,
+                align:"center"
 
             }, {
                 title: '版本号',
                 dataIndex: 'version_code',
-                width: 75
+                width: 75,
+                align:"center"
             }, {
                 title: '版本名称',
                 dataIndex: 'version',
-                width: 75
+                width: 75,
+                align:"center"
             }, {
                 title: 'APP下载链接',
                 dataIndex: 'link',
@@ -221,6 +225,7 @@ export default class Upgrade extends Component {
                 title: '是否强制下载',
                 dataIndex: 'upgrade',
                 width: 70,
+                align:"center",
                 render: (render, obj) => {
                     return obj.upgrade = obj.upgrade == '0' ? '否' : '是';
                 }
@@ -228,14 +233,17 @@ export default class Upgrade extends Component {
                 title: '升级内容',
                 dataIndex: 'content',
                 width: 150,
+                align:"center"
             }, {
                 title: '发布时间',
                 dataIndex: 'release_time',
-                width: 75
+                width: 75,
+                align:"center"
             }, {
                 title: '操作',
                 dataIndex: 'sys_opera',
                 width: 75,
+                align:"center",
                 render: (record, obj) => {
                     return <a href="#" onClick={() => this.handleClick(obj)}>删除</a>
                 }
@@ -245,11 +253,16 @@ export default class Upgrade extends Component {
         return (
             <div>
                 <Card title='升级管理'>
-                    <Col span={22}>
+                    <Col span={20}>
                         {/*<FilterForm filterSubmit={this.handleFilter} formList={this.formList}
                                     handleClickBtn={this.handleAdd.bind(this)}/>*/}
-                        <BaseForm formList={this.formList} filterSubmit={this.handleFilter} handleClickBtn={this.handleAdd.bind(this)}/>
+                        {/*<BaseForm formList={this.formList} filterSubmit={this.handleFilter} handleClickBtn={this.handleAdd.bind(this)} />*/}
+                        <BaseForm formList={this.formList} filterSubmit={this.handleFilter} />
                     </Col>
+                    <Col span={2}>   <Button type="primary"
+                                    style={{backgroundColor: '#67c23a', color: '#fff', border: 'none'}}
+                                    onClick={this.handleAdd.bind(this)}
+                    >新建版本</Button></Col>
                 </Card>
                 <Card>
                     <Col><h1 style={{fontSize: 18}}>全部(<span
@@ -260,6 +273,7 @@ export default class Upgrade extends Component {
                             columns={colums}
                             dataSource={this.state.list}
                             pagination={this.state.pagination}
+
                         />
                     </div>
                 </Card>
@@ -288,7 +302,7 @@ export default class Upgrade extends Component {
 }
 
 /*子组件1*/
-class FilterForm extends Component {
+/*class FilterForm extends Component {
 
     handleFilterSubmit = () => {
         let fieldsValue = this.props.form.getFieldsValue();
@@ -379,7 +393,7 @@ class FilterForm extends Component {
 
 }
 
-FilterForm = Form.create({})(FilterForm);
+FilterForm = Form.create({})(FilterForm);*/
 
 /*子组件2*/
 class VersionForm extends Component {

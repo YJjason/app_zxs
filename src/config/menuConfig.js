@@ -72,11 +72,11 @@ const menuList = [
         key: '/admin/user',
         children: [
             {
-                title: '封面管理',
+                title: '用户反馈',
                 key: '/admin/user/feedback',
             },
             {
-                title: '广告位管理',
+                title: '用户管理',
                 key: '/admin/user/list',
             }
         ]
