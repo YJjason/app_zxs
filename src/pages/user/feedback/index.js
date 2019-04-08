@@ -21,7 +21,13 @@ class FeedBack extends Component {
     state = {
         list: [],
         isDetailVisible: false,
-        details: []
+        details: {
+            id: '',
+            imgs: '',
+            content: '',
+            tel: '',
+            time: ''
+        }
     }
     params = {
         page: 1,
@@ -30,7 +36,6 @@ class FeedBack extends Component {
     componentWillMount() {
         this.requestList();
     }
-
 
     requestList = () => {
         const _this = this;
@@ -99,11 +104,12 @@ class FeedBack extends Component {
         },
     ]
 
+    /*产看详情*/
     handleClickDetail(obj) {
-        console.log(12,obj)
         this.setState({
             isDetailVisible: true
         })
+        const _this = this;
         axios.ajax({
             url: '/feedback/info',
             type: 'GET',
@@ -114,7 +120,10 @@ class FeedBack extends Component {
                 }
             }
         }).then((res) => {
-            console.log(123, res)
+            if (res.code == 0) {
+                let tempData = res.data.item_list;
+
+            }
         })
 
     }
@@ -170,6 +179,7 @@ class FeedBack extends Component {
                     />
                 </Card>
                 <Modal
+                    style={{width:800}}
                     title='反馈详情'
                     visible={this.state.isDetailVisible}
                     footer={null}
@@ -191,16 +201,16 @@ export default FeedBack;
 
 class VersionForm extends Component {
     render() {
-        let data = [
-            {
-                UID: '12',
-                content: "阿法法师发大水发大水发大水发大水发大水发大水发阿凡达是否打算发生大发送到",
-                imgs: ['dd', 'sss'],
-                tel: 214212133,
-                time: '2019-04-04'
-            }
-        ];
-        data = this.props.detailData
+        let data = [{
+            id: '11',
+            content: "af",
+            imgs: ["http://dummyimage.com/100x100",
+                "http://dummyimage.com/100x100",
+                "http://dummyimage.com/100x100"],
+            tel: '15151',
+            time: '2019-04-08'
+        }];
+        // data = this.props.detailData;
         return (
             <div>
                 <List
@@ -208,17 +218,16 @@ class VersionForm extends Component {
                     split={false}
                     renderItem={item => {
                         return <div>
-                            <List.Item>UID:{item.UID} </List.Item>
+                            <List.Item>UID:{item.id} </List.Item>
                             <List.Item>反馈内容:{item.content} </List.Item>
                             <List.Item>图片: {item.imgs.map((item, index) => {
-                                return <div key={index}>
-                                    <img src="" alt=""/>
+                                return <div key={index} style={{display:'inline',marginRight:5}}>
+                                    <img src={item} alt=""/>
                                 </div>
                             })}
                             </List.Item>
                             <List.Item>手机号:{item.tel} </List.Item>
                             <List.Item>反馈时间:{item.time} </List.Item>
-
                         </div>
                     }}
                 />

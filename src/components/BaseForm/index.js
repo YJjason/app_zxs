@@ -129,7 +129,7 @@ class FilterForm extends Component {
                     const SELECT = <FormItem label={label} key={field}>
                         {
                             getFieldDecorator([field], {
-                                initialValue: initialValue
+                                initialValue: 0,
                             })(
                                 <Select
                                     style={{width: width}}
