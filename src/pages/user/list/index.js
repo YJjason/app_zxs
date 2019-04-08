@@ -8,8 +8,48 @@
 import React, {Component} from 'react';
 import {Col, Card, Button, Table} from "antd";
 import BaseForm from './../../../components/BaseForm';
+import axios from './../../../axios'
+import Utils from './../../../utils/utils'
 
 class UserList extends Component {
+
+    state = {
+        list: []
+    }
+    params = {
+        page: 1
+    }
+
+    componentDidMount() {
+        this.requestList();
+    }
+
+    requestList = () => {
+        const _this = this;
+        axios.ajax({
+            url: '/user/userlist',
+            type: 'GET',
+            dataType: 'JSON',
+            data: {
+                param: this.params.page
+            }
+        }).then((res) => {
+            console.log(res)
+            if (res.code == 0) {
+                let list = res.data.item_list.map((item, index) => {
+                    item.key = index
+                    return item
+                })
+                this.setState({
+                    list: list,
+                    pagination: Utils.pagination(res, (current) => {
+                        _this.params.page = current;
+                        _this.requestList()
+                    })
+                })
+            }
+        })
+    }
 
     formList = [
         {
@@ -63,12 +103,12 @@ class UserList extends Component {
                 align: "center"
             }, {
                 title: '用户名',
-                dataIndex: 'user_name',
+                dataIndex: 'user',
                 width: 75,
                 align: "center"
             }, {
                 title: 'UID',
-                dataIndex: 'user_id',
+                dataIndex: 'uid',
                 width: 75,
                 align: "center"
             }, {
@@ -78,42 +118,51 @@ class UserList extends Component {
                 align: "center"
             }, {
                 title: '性别',
-                dataIndex: 'sex',
+                dataIndex: 'gender',
                 width: 75,
-                align: "center"
+                align: "center",
+                render: (record) => {
+                    return record == 1 ? '男' : '女'
+                }
             }, {
                 title: '身份标签',
-                dataIndex: 'label',
+                dataIndex: 'itag',
+                width: 75,
+                align: "center",
+                render: (record) => {
+                    return record == 1 ? '用户' : record == 2 ? '官方用户' : record == 3 ? '公司员工' : ''
+                }
+            }, {
+                title: '手机号',
+                dataIndex: 'phone',
                 width: 75,
                 align: "center"
             }, {
-                title: '手机号',
-                dataIndex: 'tel',
-                width: 75,
-                align: "center"
-            },{
                 title: '文章数',
-                dataIndex: 'article',
+                dataIndex: 'articlesize',
                 width: 75,
                 align: "center"
-            },{
+            }, {
                 title: '收藏数',
-                dataIndex: 'collect',
+                dataIndex: 'collectsize',
                 width: 75,
                 align: "center"
             }, {
                 title: '评论数',
-                dataIndex: 'comment',
-                width: 75,
-                align: "center"
-            },{
-                title: '状态',
-                dataIndex: 'status',
+                dataIndex: 'discusssize',
                 width: 75,
                 align: "center"
             }, {
+                title: '状态',
+                dataIndex: 'status',
+                width: 75,
+                align: "center",
+                render: (record) => {
+                    return record == 1 ? "启用" : "禁用"
+                }
+            }, {
                 title: '注册时间',
-                dataIndex: 'time',
+                dataIndex: 'regtime',
                 width: 100,
                 align: "center"
             }, {
@@ -121,15 +170,18 @@ class UserList extends Component {
                 dataIndex: 'operator',
                 width: 75,
                 align: "center",
-                render: (record, obj) => {
+                render: () => {
                     return (
-                        <a href="JavaScript:void (0)">编辑</a> |
-                        <a href="JavaScript:void (0)">停用</a>
+                        <div>
+                            <a href="JavaScript:void (0)">编辑</a> |
+                            <a href="JavaScript:void (0)">停用</a>
+                        </div>
                     )
                 }
             }
         ]
         return (
+
             <div>
                 <Card>
                     <Col span={18}>
@@ -143,6 +195,8 @@ class UserList extends Component {
                     <Table
                         bordered
                         columns={columns}
+                        dataSource={this.state.list}
+                        pagination={this.state.pagination}
                     />
                 </Card>
 
