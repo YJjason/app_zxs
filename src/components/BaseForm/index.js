@@ -75,7 +75,7 @@ class FilterForm extends Component {
                                 rules: [
                                     {
                                         validator: (rule, value, callback) => {
-                                            const timeEnd = this.props.form.getFieldValue('timeEnd')||'';
+                                            const timeEnd = this.props.form.getFieldValue('timeEnd') || '';
                                             if (timeEnd && timeEnd.isBefore(value)) {
                                                 callback('开始时间必须小于结束时间');
                                             } else {
@@ -96,7 +96,7 @@ class FilterForm extends Component {
                                 rules: [
                                     {
                                         validator: (rule, value, callback) => {
-                                            const timeStart = this.props.form.getFieldValue('timeStart')||'';
+                                            const timeStart = this.props.form.getFieldValue('timeStart') || '';
                                             if (timeStart && timeStart.isAfter(value)) {
                                                 callback('结束时间必须大于开始时间');
                                             } else {
@@ -120,6 +120,30 @@ class FilterForm extends Component {
                                 initialValue: initialValue
                             })(
                                 <Input type='text' style={{width: [width]}} placeholder={placeholder}/>
+                            )
+                        }
+                    </FormItem>;
+                    formItemList.push(INPUT);
+                } else if (item.type == 'PHONE') {
+                    // 中括号 [变量]  ,会将其看作变量对待
+                    const INPUT = <FormItem label={label} key={field}>
+                        {
+                            getFieldDecorator([field], {
+                                initialValue: initialValue,
+                                rules: [
+                                    {
+                                        validator: (rule, value, callback) => {
+                                            const reg = RegExp("^((13[0-9])|(14[5,7,8,9])|(15[0-3,5-9])|(17[0,1,3,5-8])|(18[0-9])|166|198|199|(147))\\d{8}$");
+                                            if (reg.test(value)) {
+                                                callback('请输入正确手机号')
+                                            } else {
+                                                callback()
+                                            }
+                                        }
+                                    }
+                                ]
+                            })(
+                                <Input type='text' style={{width: [width]}} placeholder={placeholder} maxLength="11"/>
                             )
                         }
                     </FormItem>;
@@ -178,7 +202,7 @@ class FilterForm extends Component {
                 {this.initFormList()}
                 <FormItem>
                     <Button type="primary" style={{marginRight: 100}} onClick={this.handleFilterSubmit}>查询</Button>
-               {/*     <Button type="primary"
+                    {/*     <Button type="primary"
                             style={{backgroundColor: '#67c23a', color: '#fff', border: 'none'}}
                             onClick={this.handleClickNew}
                     >新建版本</Button>*/}

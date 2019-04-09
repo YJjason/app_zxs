@@ -10,6 +10,7 @@ import {Col, Card, Button, Table} from "antd";
 import BaseForm from './../../../components/BaseForm';
 import axios from './../../../axios'
 import Utils from './../../../utils/utils'
+import moment from "../feedback";
 
 class UserList extends Component {
 
@@ -67,7 +68,7 @@ class UserList extends Component {
             filter: 'username',
         },
         {
-            type: 'INPUT',
+            type: 'PHONE',
             label: '手机号',
             placeholder: '',
             width: 75,
@@ -92,7 +93,41 @@ class UserList extends Component {
             ],
             filter: 'status',
         },
-    ]
+    ];
+
+    handleFilter(fieldsValue) {
+        const _this = this;
+        const uid = fieldsValue['UID'];
+        const username = fieldsValue['username'];
+        const tel = fieldsValue['tel'];
+        const status = fieldsValue['status'];
+        axios.ajax({
+            url: '/user/userlist',
+            data: {
+                param: {
+                    page: this.pages,
+                    uid,
+                    username,
+                    tel,
+                    status
+                }
+            }
+        }).then((res) => {
+            if (res.code == 0) {
+                let list = res.data.item_list.map((item, index) => {
+                    item.key = index;
+                    return item
+                });
+                this.setState({
+                    list: list,
+                    pagination: Utils.pagination(res, (current) => {
+                        _this.params.page = current;
+                        _this.requestList();
+                    })
+                })
+            }
+        })
+    }
 
     render() {
         const columns = [
@@ -185,7 +220,7 @@ class UserList extends Component {
             <div>
                 <Card>
                     <Col span={18}>
-                        <BaseForm formList={this.formList}></BaseForm>
+                        <BaseForm formList={this.formList} filterSubmit={this.handleFilter.bind(this)}></BaseForm>
                     </Col>
                     <Col>
                         <Button type="primary">新建</Button>
