@@ -293,12 +293,10 @@ export default class Upgrade extends Component {
                             this.roleForm = inst
                         }}
                     />
-
                 </Modal>
             </div>
         );
     }
-
 }
 
 /*子组件1*/

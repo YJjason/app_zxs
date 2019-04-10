@@ -16,8 +16,11 @@ import Admin from './admin';
 import Upgrade from './pages/upgrade';
 import FeedBack from './pages/user/feedback';
 import UserList from './pages/user/list';
+import EditList from "./pages/user/list/editList";
+
 
 import Nomatch from './pages/nomatch';
+
 
 export default class IRouter extends Component {
 
@@ -32,6 +35,7 @@ export default class IRouter extends Component {
                             <Route path='/admin/upgrade' component={Upgrade}/>
                             <Route path='/admin/user/feedback' component={FeedBack}/>
                             <Route path='/admin/user/list' component={UserList}/>
+                            <Route path='/user/list/:id' component={EditList}/>
 
                         </Admin>
                     </App>

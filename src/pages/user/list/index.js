@@ -35,7 +35,6 @@ class UserList extends Component {
                 param: this.params.page
             }
         }).then((res) => {
-            console.log(res)
             if (res.code == 0) {
                 let list = res.data.item_list.map((item, index) => {
                     item.key = index
@@ -129,6 +128,10 @@ class UserList extends Component {
         })
     }
 
+    handleClickEdit(obj) {
+        this.props.history.push("/user/list/" + obj.id)
+    }
+
     render() {
         const columns = [
             {
@@ -205,10 +208,10 @@ class UserList extends Component {
                 dataIndex: 'operator',
                 width: 75,
                 align: "center",
-                render: () => {
+                render: (record, obj) => {
                     return (
                         <div>
-                            <a href="JavaScript:void (0)">编辑</a> |
+                            <a href="JavaScript:void (0)" onClick={() => this.handleClickEdit(obj)}>编辑</a> |
                             <a href="JavaScript:void (0)">停用</a>
                         </div>
                     )
