@@ -6,16 +6,19 @@
  * +----------------------------------------------------------------------
  */
 import React, {Component} from 'react';
-import {Col, Card, Button, Table} from "antd";
+import {Col, Card, Button, Table, Modal,message} from "antd";
 import BaseForm from './../../../components/BaseForm';
 import axios from './../../../axios'
 import Utils from './../../../utils/utils'
 import moment from "../feedback";
 
+const confirm = Modal.confirm
+
 class UserList extends Component {
 
     state = {
-        list: []
+        list: [],
+        visible: false
     }
     params = {
         page: 1
@@ -32,7 +35,9 @@ class UserList extends Component {
             type: 'GET',
             dataType: 'JSON',
             data: {
-                param: this.params.page
+                param: {
+                    page: this.params.page
+                }
             }
         }).then((res) => {
             if (res.code == 0) {
@@ -43,6 +48,7 @@ class UserList extends Component {
                 this.setState({
                     list: list,
                     pagination: Utils.pagination(res, (current) => {
+                        console.log('current', current)
                         _this.params.page = current;
                         _this.requestList()
                     })
@@ -104,7 +110,7 @@ class UserList extends Component {
             url: '/user/userlist',
             data: {
                 param: {
-                    page: this.pages,
+                    page: this.params.page,
                     uid,
                     username,
                     tel,
@@ -131,6 +137,31 @@ class UserList extends Component {
     handleClickEdit(obj) {
         this.props.history.push("/user/list/" + obj.id)
     }
+
+    handleClickUse(obj) {
+        const _this =this;
+        const status = obj.status == '0' ? '禁用' : '启用';
+        this.setState({
+            visible: true
+        })
+        confirm({
+            title: '提示',
+            content: '你确定要' + status,
+            onOk() {
+                axios.ajax({
+                    id: obj.id
+                }).then((res) => {
+                    if(res.code==0){
+                        message.success('状态修改成功');
+                    }
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    }
+
 
     render() {
         const columns = [
@@ -196,7 +227,7 @@ class UserList extends Component {
                 width: 75,
                 align: "center",
                 render: (record) => {
-                    return record == 1 ? "启用" : "禁用"
+                    return record == "0" ? "禁用" : "启用"
                 }
             }, {
                 title: '注册时间',
@@ -212,14 +243,14 @@ class UserList extends Component {
                     return (
                         <div>
                             <a href="JavaScript:void (0)" onClick={() => this.handleClickEdit(obj)}>编辑</a> |
-                            <a href="JavaScript:void (0)">停用</a>
+                            <a href="JavaScript:void (0)"
+                               onClick={() => this.handleClickUse(obj)}>{obj.status == 0 ? '禁用' : '启用'}</a>
                         </div>
                     )
                 }
             }
         ]
         return (
-
             <div>
                 <Card>
                     <Col span={18}>
@@ -237,6 +268,14 @@ class UserList extends Component {
                         pagination={this.state.pagination}
                     />
                 </Card>
+                {/*    <Modal
+                    title="Basic Modal"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <p>你确定要启用吗？</p>
+                </Modal>*/}
 
             </div>
         );

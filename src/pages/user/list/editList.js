@@ -6,7 +6,7 @@
  * +----------------------------------------------------------------------
  */
 import React, {Component} from 'react';
-import {Card, Breadcrumb, Form, Input, Radio, Button, Select} from "antd";
+import {Card, Breadcrumb, Form, Input, Radio, Button, Select, message} from "antd";
 
 import axios from './../../../axios';
 
@@ -30,7 +30,9 @@ class EditList extends Component {
         axios.ajax({
             url: 'user/getuserinfo',
             data: {
-                param: id
+                param: {
+                    userId: id
+                }
             }
         }).then(res => {
             if (res.code == 0) {
@@ -57,11 +59,16 @@ class EditList extends Component {
                     remark
                 }
             }
-        }).then(res=>{
-            if(res.code==0){
-
+        }).then(res => {
+            if (res.code == 0) {
+                message.success("修改成功")
+                window.history.back();
             }
         })
+    }
+
+    handleCancel() {
+        window.history.back();
     }
 
     render() {
@@ -74,7 +81,8 @@ class EditList extends Component {
                     </Breadcrumb>
                 </Card>
                 <Card style={{marginTop: 10}}>
-                    <FormAccount filterForm={this.state.list} filterItem={this.handleUpdata}>
+                    <FormAccount filterForm={this.state.list} filterItem={this.handleUpdata}
+                                 cancelBtn={this.handleCancel}>
                     </FormAccount>
 
                 </Card>
@@ -95,8 +103,10 @@ class FormAccount extends Component {
     }
     handleClickSave = () => {
         const fieldForm = this.props.form.getFieldsValue();
-        console.log(123, fieldForm);
         this.props.filterItem(fieldForm);
+    }
+    handleClickCancel = () => {
+        this.props.cancelBtn();
     }
 
     render() {
@@ -118,7 +128,7 @@ class FormAccount extends Component {
                             getFieldDecorator("uid", {
                                 initialValue: data.id
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -127,7 +137,7 @@ class FormAccount extends Component {
                             getFieldDecorator("nickName", {
                                 initialValue: data.nick_name
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -163,7 +173,7 @@ class FormAccount extends Component {
                             getFieldDecorator("sex", {
                                 initialValue: data.sex == 0 ? "女" : '男'
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -172,7 +182,7 @@ class FormAccount extends Component {
                             getFieldDecorator("city", {
                                 initialValue: data.city_id
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -181,7 +191,7 @@ class FormAccount extends Component {
                             getFieldDecorator("psw", {
                                 initialValue: data.user_pwd
                             })(
-                                <Input/>
+                                <Input type='password' className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -190,7 +200,7 @@ class FormAccount extends Component {
                             getFieldDecorator("phone", {
                                 initialValue: data.tel
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -211,7 +221,7 @@ class FormAccount extends Component {
                             getFieldDecorator("article", {
                                 initialValue: data.article_count
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -220,7 +230,7 @@ class FormAccount extends Component {
                             getFieldDecorator("collection", {
                                 initialValue: data.collection_count
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -229,7 +239,7 @@ class FormAccount extends Component {
                             getFieldDecorator("comment", {
                                 initialValue: data.comment_count
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -238,7 +248,7 @@ class FormAccount extends Component {
                             getFieldDecorator("register", {
                                 initialValue: data.time
                             })(
-                                <Input/>
+                                <Input className="edit-input" readOnly/>
                             )
                         }
                     </FormItem>
@@ -247,7 +257,7 @@ class FormAccount extends Component {
                             getFieldDecorator("remark", {
                                 initialValue: data.remark
                             })(
-                                <TextArea/>
+                                <TextArea rows={4}/>
                             )
                         }
                     </FormItem>
@@ -257,7 +267,7 @@ class FormAccount extends Component {
                                 <div>
                                     <Button type="primary" style={{marginRight: 15}}
                                             onClick={this.handleClickSave}>保存</Button>
-                                    <Button type="default">取消</Button>
+                                    <Button type="default" onClick={this.handleClickCancel}>取消</Button>
                                 </div>
                             )
                         }

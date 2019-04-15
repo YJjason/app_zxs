@@ -44,7 +44,9 @@ class FeedBack extends Component {
             type: 'GET',
             dataType: 'JSON',
             data: {
-                param: this.params.page
+                param:{
+                    page: this.params.page
+                }
             }
         }).then((res) => {
             if (res.code == 0) {
