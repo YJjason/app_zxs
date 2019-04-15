@@ -149,10 +149,16 @@ class UserList extends Component {
             content: '你确定要' + status,
             onOk() {
                 axios.ajax({
-                    id: obj.id
+                    url:'/user/stopuser',
+                    data:{
+                        param:{
+                            id: obj.id
+                        }
+                    }
                 }).then((res) => {
                     if(res.code==0){
                         message.success('状态修改成功');
+                        _this.requestList();
                     }
                 })
             },
