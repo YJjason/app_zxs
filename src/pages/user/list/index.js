@@ -137,6 +137,9 @@ class UserList extends Component {
     handleClickEdit(obj) {
         this.props.history.push("/user/list/" + obj.id)
     }
+    handleCreate(){
+        this.props.history.push('/user/editCreate')
+    }
 
     handleClickUse(obj) {
         const _this =this;
@@ -167,7 +170,6 @@ class UserList extends Component {
             },
         });
     }
-
 
     render() {
         const columns = [
@@ -263,7 +265,8 @@ class UserList extends Component {
                         <BaseForm formList={this.formList} filterSubmit={this.handleFilter.bind(this)}></BaseForm>
                     </Col>
                     <Col>
-                        <Button type="primary">新建</Button>
+                        <Button type="primary" onClick={this.handleCreate.bind(this)}>新建</Button>
+
                     </Col>
                 </Card>
                 <Card>
@@ -286,7 +289,6 @@ class UserList extends Component {
             </div>
         );
     }
-
 }
 
 export default UserList;
