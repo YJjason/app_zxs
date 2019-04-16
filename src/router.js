@@ -18,8 +18,14 @@ import FeedBack from './pages/user/feedback';
 import UserList from './pages/user/list';
 import EditList from "./pages/user/list/editList";
 import EditCreate from './pages/user/list/editCreate'
+import Adver from "./pages/manager/ad";
+import Cover from "./pages/manager/cover";
+
+
+
 
 import Nomatch from './pages/nomatch';
+
 
 
 export default class IRouter extends Component {
@@ -37,6 +43,8 @@ export default class IRouter extends Component {
                             <Route path='/admin/user/list' component={UserList}/>
                             <Route path='/user/list/:id' component={EditList}/>
                             <Route path='/user/editCreate' component={EditCreate}/>
+                            <Route path='/admin/manager/ad' component={Adver}/>
+                            <Route path='/admin/manager/cover' component={Cover}/>
 
                         </Admin>
                     </App>

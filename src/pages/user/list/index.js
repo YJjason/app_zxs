@@ -267,7 +267,7 @@ class UserList extends Component {
                     <Col>
                         <Button type="primary" onClick={this.handleCreate.bind(this)}>新建</Button>
 
-                    </Col>
+                </Col>
                 </Card>
                 <Card>
                     <Table
